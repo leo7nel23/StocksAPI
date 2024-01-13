@@ -2,102 +2,63 @@
 
 import Foundation
 
-public struct StocksAPI {
-    private let session = URLSession.shared
-     private let jsonDecoder = {
-         let decoder = JSONDecoder()
-         decoder.dateDecodingStrategy = .secondsSince1970
-         return decoder
-    }()
-    
-    private let baseURL = "https://query1.finance.yahoo.com"
-    public init() {}
-    
-    
-    public func fetchChartData(symbol: String, range:ChartRange) async throws -> ChartData? {
-        guard var urlComponents = URLComponents(string:  "\(baseURL)/v8/finance/chart/\(symbol)") else {
-            throw APIError.invalidURL
-        }
-        urlComponents.queryItems = [
-            .init(name: "range", value: range.rawValue),
-            .init(name: "interval", value: range.interval),
-            .init(name: "indicators", value: "quote"),
-            .init(name: "includeTimestamps", value: "true")
-        ]
-        guard let url = urlComponents.url else {
-            throw APIError.invalidURL
-        }
-        
-        let (response, statusCode): (ChartResponse, Int) = try await fetch(url: url)
-        if let error = response.error {
-            throw APIError.httpStatusCodeFailed(statusCode: statusCode, error: error )
-        }
-        return response.data?.first
-    }
-    
-    public func searchTickers(query: String, isEquityTypeOnly: Bool = true) async throws -> [Ticker] {
-        guard var urlComponents = URLComponents(string:  "\(baseURL)/v1/finance/search") else {
-            throw APIError.invalidURL
-        }
-        urlComponents.queryItems = [
-            .init(name: "q", value: query),
-            .init(name: "quotesCount", value: "20"),
-            .init(name: "lang", value: "en-US")
-        ]
-        guard let url = urlComponents.url else {
-            throw APIError.invalidURL
-        }
-        
-        let (response, statusCode): (SearchTickerResponse, Int) = try await fetch(url: url)
-        if let error = response.error {
-            throw APIError.httpStatusCodeFailed(statusCode: statusCode, error: error)
-        }
-        
-        if isEquityTypeOnly {
-            return (response.data ?? [])
-                .filter{ ($0.quoteType ?? "").localizedCaseInsensitiveCompare("equity") == .orderedSame }
-        } else {
-            return response.data ?? []
+public enum ChartTimeRange {
+    case day(Int)
+    case month(Double)
+    case year(Double)
+
+    fileprivate var timeIntervalSinceToday: TimeInterval {
+        switch self {
+        case let .year(year):
+            return year * 365 * 24 * 3600
+        case let .month(month):
+            return month * 31 * 24 * 3600
+        case let .day(day):
+            return Double(day) * 24 * 3600
         }
     }
-    
-    public func fetchQuotes(symbols: String) async throws -> [Quote] {
-        guard var urlComponents = URLComponents(string:  "\(baseURL)/v7/finance/quote") else {
-            throw APIError.invalidURL
-        }
-        urlComponents.queryItems = [.init(name: "symbols", value: symbols)]
-        guard let url = urlComponents.url else {
-            throw APIError.invalidURL
-        }
-        
-        let (response, statusCode): (QuoteResponse, Int) = try await fetch(url: url)
-        if let error = response.error {
-            throw APIError.httpStatusCodeFailed(statusCode: statusCode, error: error)
-        }
-        return response.data ?? []
-    }
-    
-    
-    
-    private func fetch<D: Decodable>(url: URL) async throws -> (D, Int) {
-        let (data, response) = try await session.data(from: url)
-        let statusCode = try validateHTTPResponse(response)
-        return(try jsonDecoder.decode(D.self, from: data), statusCode)
-    }
-    
-    private func validateHTTPResponse(_ response: URLResponse) throws -> Int {
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.invalidResponseType
-        }
-        
-        guard 200...299 ~= httpResponse.statusCode ||
-                400...499 ~= httpResponse.statusCode
-        else {
-            throw APIError.httpStatusCodeFailed(statusCode: httpResponse.statusCode, error: nil)
-        }
-        
-        return httpResponse.statusCode
-    }
-    
 }
 
+public enum ChartInterval {
+    case oneDay
+    case oneWeek
+    case oneMonth
+}
+
+protocol StocksAPIProtocol {
+    func search(for ticker: String) async throws -> [Ticker]
+    func chartData(for ticker: String, from: Date, to: Date, interval: ChartInterval) async throws -> ChartData?
+}
+
+public final class StocksAPI {
+    public static let yahoo: StocksAPI = StocksAPI(type: .yahoo)
+
+    enum APIType {
+        case yahoo
+    }
+
+    let api: any StocksAPIProtocol
+
+    private init(type: APIType) {
+        api = YahooStocksAPI.shared
+    }
+
+    public func search(for ticker: String) async throws -> [Ticker] {
+        try await api.search(for: ticker)
+    }
+
+    public func chartData(
+        for ticker: String,
+        timeRange: ChartTimeRange = .year(20),
+        interval: ChartInterval = .oneDay
+    ) async throws -> ChartData? {
+        let today = Date()
+        return try await api.chartData(
+            for: ticker,
+            from: today.addingTimeInterval(-timeRange.timeIntervalSinceToday),
+            to: today,
+            interval: interval
+        )
+    }
+
+}

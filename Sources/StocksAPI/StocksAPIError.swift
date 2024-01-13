@@ -1,34 +1,48 @@
 //
-//  APIError.swift
+//  StocksAPIError.swift
 //  
 //
-//  Created by Le Bon B' Bauma on 01/03/2023.
+//  Created by 賴柏宏 on 2024/1/12.
 //
 
 import Foundation
 
-public enum APIError: CustomNSError {
-    
+public struct ErrorResponse: Codable {
+
+    public let code: String
+    public let description: String
+
+    public init(code: String, description: String) {
+        self.code = code
+        self.description = description
+    }
+}
+
+public enum StocksAPIError: CustomNSError {
+
     case invalidURL
     case invalidResponseType
     case httpStatusCodeFailed(statusCode: Int, error: ErrorResponse?)
-    
-    
+
+
     public static var errorDomain: String {
-        "StocksAPI"
+        "StocksAPIErrorDomain"
     }
-    
-    public var errorCode: Int{
+
+    public var errorCode: Int {
         switch self {
-        case .invalidURL: return 0
-        case .invalidResponseType: return 1
-        case .httpStatusCodeFailed: return 2
-            
+        case .invalidURL:
+            return 0
+        case .invalidResponseType: 
+            return 1
+        case .httpStatusCodeFailed: 
+            return 2
+
         }
     }
-    
+
     public var errorUserInfo: [String : Any] {
-        
+
         let text: String
         switch self {
         case .invalidURL:
@@ -44,5 +58,5 @@ public enum APIError: CustomNSError {
         }
         return [NSLocalizedDescriptionKey: text]
     }
-    
+
 }
