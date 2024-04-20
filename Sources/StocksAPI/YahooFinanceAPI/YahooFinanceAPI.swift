@@ -45,8 +45,8 @@ struct YahooFinanceAPI {
         }
         return response.data?.first
     }
-
-    func searchTickers(query: String, isEquityTypeOnly: Bool = true) async throws -> [YahooModel.Ticker] {
+  
+    func searchTickers(query: String, isEquityTypeOnly: Bool = false) async throws -> [YahooModel.Ticker] {
         guard var urlComponents = URLComponents(string:  "\(baseURL)/v1/finance/search") else {
             throw StocksAPIError.invalidURL
         }

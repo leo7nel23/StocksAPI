@@ -8,8 +8,15 @@
 import Foundation
 
 public struct Ticker: Equatable {
-    let symbol: String
-    let shortName: String?
-    let longName: String?
-    let exchangeDisp: String
+    public let symbol: String
+    public let shortName: String?
+    public let longName: String?
+    public let exchangeDisp: String
+
+    public init(symbol: String, shortName: String?, longName: String?, exchangeDisp: String) {
+        self.symbol = symbol
+        self.shortName = shortName
+        self.longName = longName
+        self.exchangeDisp = exchangeDisp
+    }
 }
