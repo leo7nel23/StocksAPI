@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct ChartData: Equatable {
-    public struct MetaData: Equatable {
+public struct ChartData: Codable, Equatable {
+    public struct MetaData: Codable, Equatable {
         public let currency: String
         public let symbol: String
         public let marketPrice: Double?
@@ -24,7 +24,7 @@ public struct ChartData: Equatable {
         }
     }
 
-    public struct Indicator: Equatable {
+    public struct Indicator: Codable, Equatable {
         public let timestamp: Date
         public let open: Double
         public let high: Double

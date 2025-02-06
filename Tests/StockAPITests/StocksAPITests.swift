@@ -13,4 +13,9 @@ final class StocksAPITests: XCTestCase {
         XCTAssertEqual(chartResult?.meta.currency, "USD")
         XCTAssertEqual(chartResult?.meta.symbol, "NVDA")
     }
+
+  func test123() async throws {
+    let quote = try await StocksAPI.yahoo.test()
+    print(quote)
+  }
 }

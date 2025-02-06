@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "64dd16a5f2099dd5400f5e6d1442dc5ab0c1d917",
+        "version" : "5.2.0"
+      }
+    },
+    {
+      "identity" : "swiftyfinance",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AlexRoar/SwiftYFinance",
+      "state" : {
+        "revision" : "ad0b47c6df68160c66f20e5a39a32ec2edef6352",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swiftyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON.git",
+      "state" : {
+        "revision" : "2b6054efa051565954e1d2b9da831680026cd768",
+        "version" : "4.3.0"
+      }
+    }
+  ],
+  "version" : 2
+}

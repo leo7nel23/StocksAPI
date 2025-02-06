@@ -20,13 +20,14 @@ final class YahooStocksAPI: StocksAPIProtocol {
                 symbol: $0.symbol,
                 shortName: $0.shortname,
                 longName: $0.longname,
-                exchangeDisp: $0.exchDisp ?? ""
+                exchangeDisp: $0.exchDisp ?? "",
+                quoteType: $0.quoteType ?? ""
             )
         }
     }
 
     func chartData(for ticker: String, from: Date, to: Date, interval: ChartInterval) async throws -> ChartData? {
-        let chartData =  try await api.fetchChartData(
+        let chartData = try await api.fetchChartData(
             symbol: ticker,
             from: from,
             to: to,

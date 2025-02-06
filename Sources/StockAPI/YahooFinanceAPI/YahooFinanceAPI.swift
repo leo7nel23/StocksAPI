@@ -72,24 +72,6 @@ struct YahooFinanceAPI {
         }
     }
 
-    func fetchQuotes(symbols: String) async throws -> [YahooModel.Quote] {
-        guard var urlComponents = URLComponents(string:  "\(baseURL)/v7/finance/quote") else {
-            throw StocksAPIError.invalidURL
-        }
-        urlComponents.queryItems = [.init(name: "symbols", value: symbols)]
-        guard let url = urlComponents.url else {
-            throw StocksAPIError.invalidURL
-        }
-
-        let (response, statusCode): (YahooModel.QuoteResponse, Int) = try await fetch(url: url)
-        if let error = response.error {
-            throw StocksAPIError.httpStatusCodeFailed(statusCode: statusCode, error: error)
-        }
-        return response.data ?? []
-    }
-
-
-
     private func fetch<D: Decodable>(url: URL) async throws -> (D, Int) {
         let (data, response) = try await session.data(from: url)
         let statusCode = try validateHTTPResponse(response)

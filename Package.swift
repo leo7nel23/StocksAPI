@@ -4,14 +4,14 @@
 import PackageDescription
 
 let package = Package(
-  name: "StocksAPI",
+  name: "StockAPI",
   platforms: [
     .iOS(.v13), .macOS(.v12), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v8)
   ],
   products: [
     .library(
-      name: "StocksAPI",
-      targets: ["StocksAPI"]
+      name: "StockAPI",
+      targets: ["StockAPI"]
     )
   ],
   dependencies: [
@@ -19,12 +19,12 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "StocksAPI",
+      name: "StockAPI",
       dependencies: ["SwiftYFinance"]
     ),
     .testTarget(
-      name: "StocksAPITests",
-      dependencies: ["StocksAPI"]
+      name: "StockAPITests",
+      dependencies: ["StockAPI"]
     )
   ]
 )
