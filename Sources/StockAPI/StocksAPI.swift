@@ -25,12 +25,12 @@ public enum ChartInterval {
     case oneMonth
 }
 
-protocol StocksAPIProtocol {
+protocol StocksAPIProtocol: Sendable {
     func search(for ticker: String) async throws -> [Ticker]
     func chartData(for ticker: String, from: Date, to: Date, interval: ChartInterval) async throws -> ChartData?
 }
 
-public final class StocksAPI {
+public final class StocksAPI: Sendable {
     public static let yahoo: StocksAPI = StocksAPI(type: .yahoo)
 
     enum APIType {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class YahooStocksAPI: StocksAPIProtocol {
+final class YahooStocksAPI: Sendable, StocksAPIProtocol {
     static let shared: YahooStocksAPI = YahooStocksAPI()
 
     private init() {}
