@@ -7,6 +7,8 @@
 
 import Foundation
 
+enum YahooModel {}
+
 struct YahooFinanceAPI {
     private let session = URLSession.shared
     private let jsonDecoder = {
@@ -18,7 +20,6 @@ struct YahooFinanceAPI {
     private let baseURL = "https://query1.finance.yahoo.com"
     init() {}
 
-
     func fetchChartData(
         symbol: String,
         from: Date,
@@ -26,7 +27,7 @@ struct YahooFinanceAPI {
         interval: YahooModel.Interval
     ) async throws -> YahooModel.ChartData? {
         guard var urlComponents = URLComponents(string:  "\(baseURL)/v8/finance/chart/\(symbol)") else {
-            throw StocksAPIError.invalidURL
+            throw StockAPIError.invalidURL
         }
         urlComponents.queryItems = [
             .init(name: "interval", value: interval.rawValue),
@@ -36,19 +37,19 @@ struct YahooFinanceAPI {
             .init(name: "period2", value: "\(Int(to.timeIntervalSince1970))")
         ]
         guard let url = urlComponents.url else {
-            throw StocksAPIError.invalidURL
+            throw StockAPIError.invalidURL
         }
 
         let (response, statusCode): (YahooModel.ChartResponse, Int) = try await fetch(url: url)
         if let error = response.error {
-            throw StocksAPIError.httpStatusCodeFailed(statusCode: statusCode, error: error )
+            throw StockAPIError.httpStatusCodeFailed(statusCode: statusCode, error: error )
         }
         return response.data?.first
     }
   
     func searchTickers(query: String, isEquityTypeOnly: Bool = false) async throws -> [YahooModel.Ticker] {
         guard var urlComponents = URLComponents(string:  "\(baseURL)/v1/finance/search") else {
-            throw StocksAPIError.invalidURL
+            throw StockAPIError.invalidURL
         }
         urlComponents.queryItems = [
             .init(name: "q", value: query),
@@ -56,12 +57,12 @@ struct YahooFinanceAPI {
             .init(name: "lang", value: "en-US")
         ]
         guard let url = urlComponents.url else {
-            throw StocksAPIError.invalidURL
+            throw StockAPIError.invalidURL
         }
 
         let (response, statusCode): (YahooModel.SearchTickerResponse, Int) = try await fetch(url: url)
         if let error = response.error {
-            throw StocksAPIError.httpStatusCodeFailed(statusCode: statusCode, error: error)
+            throw StockAPIError.httpStatusCodeFailed(statusCode: statusCode, error: error)
         }
 
         if isEquityTypeOnly {
@@ -80,18 +81,16 @@ struct YahooFinanceAPI {
 
     private func validateHTTPResponse(_ response: URLResponse) throws -> Int {
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw StocksAPIError.invalidResponseType
+            throw StockAPIError.invalidResponseType
         }
 
         guard 200...299 ~= httpResponse.statusCode ||
                 400...499 ~= httpResponse.statusCode
         else {
-            throw StocksAPIError.httpStatusCodeFailed(statusCode: httpResponse.statusCode, error: nil)
+            throw StockAPIError.httpStatusCodeFailed(statusCode: httpResponse.statusCode, error: nil)
         }
 
         return httpResponse.statusCode
     }
 
 }
-
-enum YahooModel {}

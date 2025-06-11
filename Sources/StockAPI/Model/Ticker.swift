@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Ticker: Sendable, Codable, Hashable, Equatable, Identifiable {
+public struct Ticker: Codable, Hashable, Equatable, Identifiable {
     public var id: String { symbol }
     
     public let symbol: String

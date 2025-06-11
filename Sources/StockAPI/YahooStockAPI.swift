@@ -1,5 +1,5 @@
 //
-//  YahooStocksAPI.swift
+//  YahooStockAPI.swift
 //
 //
 //  Created by 賴柏宏 on 2024/1/12.
@@ -7,15 +7,10 @@
 
 import Foundation
 
-final class YahooStocksAPI: Sendable, StocksAPIProtocol {
-    static let shared: YahooStocksAPI = YahooStocksAPI()
-
-    private init() {}
-
-    let api = YahooFinanceAPI()
-
-    func search(for ticker: String) async throws -> [Ticker] {
-        try await api.searchTickers(query: ticker).map {
+enum YahooStockAPI: StockAPIProtocol {
+    private static let API = YahooFinanceAPI()
+    static func search(for ticker: String) async throws -> [Ticker] {
+        try await API.searchTickers(query: ticker).map {
            Ticker(
                 symbol: $0.symbol,
                 shortName: $0.shortname,
@@ -26,8 +21,8 @@ final class YahooStocksAPI: Sendable, StocksAPIProtocol {
         }
     }
 
-    func chartData(for ticker: String, from: Date, to: Date, interval: ChartInterval) async throws -> ChartData? {
-        let chartData = try await api.fetchChartData(
+    static func chartData(for ticker: String, from: Date, to: Date, interval: ChartInterval) async throws -> ChartData? {
+        let chartData = try await API.fetchChartData(
             symbol: ticker,
             from: from,
             to: to,

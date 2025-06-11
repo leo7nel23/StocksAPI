@@ -1,5 +1,5 @@
 //
-//  StocksAPIError.swift
+//  StockAPIError.swift
 //  
 //
 //  Created by 賴柏宏 on 2024/1/12.
@@ -7,8 +7,9 @@
 
 import Foundation
 
+// Stock API Error Contain Error Protocol which should confirm Sendable,
+// So this struct should also confirm Sendable
 public struct ErrorResponse: Sendable, Codable {
-
     public let code: String
     public let description: String
 
@@ -18,7 +19,7 @@ public struct ErrorResponse: Sendable, Codable {
     }
 }
 
-public enum StocksAPIError: CustomNSError {
+public enum StockAPIError: CustomNSError {
 
     case invalidURL
     case invalidResponseType
