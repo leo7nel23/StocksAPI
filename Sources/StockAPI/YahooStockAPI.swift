@@ -10,7 +10,7 @@ import Foundation
 enum YahooStockAPI: StockAPIProtocol {
     private static let API = YahooFinanceAPI()
     static func search(for ticker: String) async throws -> [Ticker] {
-        try await API.searchTickers(query: ticker).map {
+        try await API.searchTickers(query: ticker, isEquityTypeOnly: true).map {
            Ticker(
                 symbol: $0.symbol,
                 shortName: $0.shortname,
