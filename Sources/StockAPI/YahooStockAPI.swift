@@ -39,7 +39,7 @@ private extension YahooModel.ChartData {
                 currency: meta.currency,
                 symbol: meta.symbol,
                 marketPrice: meta.regularMarketPrice ?? indicators.last?.close,
-                previousClose: meta.regularMarketPrice ?? indicators.last?.close,
+                previousClose: indicators.count >= 2 ? indicators[indicators.count - 2].close : meta.previousClose,
                 gmtOffset: meta.gmtoffset
             ),
             indicators: indicators.map {
