@@ -44,11 +44,13 @@ extension YahooModel {
     struct ChartData: Decodable {
         let meta: YahooModel.ChartMeta
         let indicators: [Indicator]
+        let events: ChartEvents?
 
         enum CodingKeys: CodingKey {
             case meta
             case timestamp
             case indicators
+            case events
         }
 
         enum IndicatorKeys: CodingKey {
@@ -65,9 +67,9 @@ extension YahooModel {
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             meta = try container.decode(YahooModel.ChartMeta.self, forKey: .meta)
+            events = try container.decodeIfPresent(ChartEvents.self, forKey: .events)
 
             let timestamps = try container.decodeIfPresent([Date].self, forKey: .timestamp) ?? []
-
             if let indicatorsContainer = try? container.nestedContainer(keyedBy: IndicatorKeys.self, forKey: .indicators),
                var quotes = try? indicatorsContainer.nestedUnkeyedContainer(forKey: .quote),
                let quoteContainer = try? quotes.nestedContainer(keyedBy: QuoteKeys.self) {
@@ -90,13 +92,29 @@ extension YahooModel {
                 self.indicators = []
             }
         }
-        init(meta: YahooModel.ChartMeta, indicators: [Indicator]) {
+        init(meta: YahooModel.ChartMeta, indicators: [Indicator], events: ChartEvents?) {
             self.meta = meta
             self.indicators = indicators
+            self.events = events
         }
     }
 
+    struct ChartEvents: Decodable {
+        let splits: [String: ChartSplit]?
+        let div: [String: ChartDividend]?
+    }
 
+    struct ChartSplit: Decodable {
+        let date: Date
+        let numerator: Double
+        let denominator: Double
+        let splitRatio: String
+    }
+
+    struct ChartDividend: Decodable {
+        let date: Date
+        let amount: Double
+    }
 
     struct ChartMeta: Decodable {
         let currency: String
@@ -143,7 +161,6 @@ extension YahooModel {
 
             self.regularTradingPeriodEndDate = try regularTradingPeriodContainer?.decodeIfPresent(Date.self, forKey: .end) ?? Date()
         }
-
     }
 
     struct Indicator: Codable {

@@ -50,6 +50,14 @@ private extension YahooModel.ChartData {
                     low: $0.low,
                     close: $0.close
                 )
+            },
+            splits: (events?.splits.map { Array($0.values) } ?? []).map {
+                ChartData.Split(
+                    date: $0.date,
+                    numerator: $0.numerator,
+                    denominator: $0.denominator,
+                    splitRatio: $0.splitRatio
+                )
             }
         )
     }

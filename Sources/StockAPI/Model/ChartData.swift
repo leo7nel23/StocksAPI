@@ -8,6 +8,20 @@
 import Foundation
 
 public struct ChartData: Codable, Equatable {
+    public struct Split: Codable, Equatable {
+        public let date: Date
+        public let numerator: Double
+        public let denominator: Double
+        public let splitRatio: String
+
+        public init(date: Date, numerator: Double, denominator: Double, splitRatio: String) {
+            self.date = date
+            self.numerator = numerator
+            self.denominator = denominator
+            self.splitRatio = splitRatio
+        }
+    }
+
     public struct MetaData: Codable, Equatable {
         public let currency: String
         public let symbol: String
@@ -42,9 +56,11 @@ public struct ChartData: Codable, Equatable {
 
     public let meta: MetaData
     public let indicators: [Indicator]
+    public let splits: [Split]
 
-    public init(meta: MetaData, indicators: [Indicator]) {
+    public init(meta: MetaData, indicators: [Indicator], splits: [Split] = []) {
         self.meta = meta
         self.indicators = indicators
+        self.splits = splits
     }
 }

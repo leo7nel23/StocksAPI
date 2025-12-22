@@ -33,6 +33,7 @@ struct YahooFinanceAPI {
             .init(name: "interval", value: interval.rawValue),
             .init(name: "indicators", value: "quote"),
             .init(name: "includeTimestamps", value: "true"),
+            .init(name: "events", value: "div|split"),
             .init(name: "period1", value: "\(Int(from.timeIntervalSince1970))"),
             .init(name: "period2", value: "\(Int(to.timeIntervalSince1970))")
         ]
